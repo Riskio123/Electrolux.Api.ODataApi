@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\Electrolux.Api.ODataApi.props" />
+</Project>

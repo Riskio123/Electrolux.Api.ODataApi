@@ -1,0 +1,6 @@
+@Electrolux.Api.ODataApi_HostAddress = http://localhost:5048
+
+GET {{Electrolux.Api.ODataApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
