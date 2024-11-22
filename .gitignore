@@ -91,4 +91,5 @@ npm-debug.log*
 .yarn/
 .yarnrc.yml
 
-/.vs/Electrolux.Api.ODataApi
+# Azure Functions
+.local.settings.json
