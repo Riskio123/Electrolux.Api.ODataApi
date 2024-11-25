@@ -5,7 +5,7 @@ namespace Electrolux.Api.ODataApi.Mock
 {
     public class MockApiFactory
     {
-        public static string BuildMockQuery(string filterType, ODataFilter oDataFilter)
+        public static object BuildMockQuery(string filterType, ODataFilter oDataFilter)
         {
             var query = new
             {
@@ -21,14 +21,14 @@ namespace Electrolux.Api.ODataApi.Mock
                             "Phone" => "contactDetails.phone.mobile.number",
                             _ => throw new ArgumentException("Invalid filter type", nameof(filterType))
                         },
-                        Operator = oDataFilter.Operator,
+                        @operator = oDataFilter.Operator,
                         value = oDataFilter.Value
                     }
                     },
                     and = new object[]
                     {
-                    new { field = "roleCode", Operator = "eq", value = "Customer" },
-                    new { field = "status", Operator = "eq", value = "Active" }
+                    new { field = "roleCode", @operator = "eq", value = "Customer" },
+                    new { field = "status", @operator = "eq", value = "Active" }
                     }
                 },
                 fields = new[]
@@ -53,10 +53,11 @@ namespace Electrolux.Api.ODataApi.Mock
             }
             };
 
-            return JsonSerializer.Serialize(query, new JsonSerializerOptions
-            {
-                WriteIndented = true 
-            });
+            return query;
+            //return JsonSerializer.Serialize(query, new JsonSerializerOptions
+            //{
+            //    WriteIndented = true
+            //});
         }
     }
 

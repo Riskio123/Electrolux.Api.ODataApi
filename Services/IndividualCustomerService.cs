@@ -1,4 +1,5 @@
-﻿using Electrolux.Api.ODataApi.Dto;
+﻿using Electrolux.Api.ODataApi.ApiClient.Interfaces;
+using Electrolux.Api.ODataApi.Dto;
 using Electrolux.Api.ODataApi.Enum;
 using Electrolux.Api.ODataApi.Mock;
 using Electrolux.Api.ODataApi.Model.Customer;
@@ -10,7 +11,14 @@ namespace Electrolux.Api.ODataApi.Services
 {
     public class IndividualCustomerService : IIndividualCustomerService
     {
-        public Task<IEnumerable<IndividualCustomer>> GetIndividualCustomerCollectionByFilter(ODataQueryOptions queryOptions)
+        private readonly IBackEndApiClient _backEndApiClient;
+
+        public IndividualCustomerService(IBackEndApiClient backEndApiClient)
+        {
+            _backEndApiClient = backEndApiClient;
+        }
+
+        public async Task<IEnumerable<IndividualCustomer>> GetIndividualCustomerCollectionByFilter(ODataQueryOptions queryOptions)
         {
             var filter = queryOptions.Filter?.RawValue;
             var filterType = GetFilterType(filter);
@@ -25,10 +33,9 @@ namespace Electrolux.Api.ODataApi.Services
 
             var mockQuery = MockApiFactory.BuildMockQuery(filterType.ToString(), oDataFilter);
 
-            //simulate httpRequest for backEndApi
-            Task.Delay(100).Wait();
+            var mockResponse = await _backEndApiClient.GetCustomerDataAsync(mockQuery);
 
-            var mockResponse = MockApiResponse.GenerateMockResponse(filterType.ToString(), oDataFilter, 5);
+            //var mockResponse = MockApiResponse.GenerateMockResponse(filterType.ToString(), oDataFilter, 5);
 
             if (!mockResponse.Success)
                 throw new Exception("Error in backend API response");
@@ -40,7 +47,7 @@ namespace Electrolux.Api.ODataApi.Services
                 LastName = x.LastName,
                 ContactDetails = new Model.Customer.ContactDetails
                 {
-                    Phone = x.ContactDetails.Phone.Mobile.Normalized,
+                    Phone = x.ContactDetails.Phone.Mobile.Number,
                     Address =new Model.Customer.Address {
                         City= x.Addresses.Where(a=> a.Type=="main").FirstOrDefault()?.City,
                         Country = x.Addresses.Where(a => a.Type == "main").FirstOrDefault()?.Country,
@@ -48,9 +55,9 @@ namespace Electrolux.Api.ODataApi.Services
                     },
                     BillingAddress = new Model.Customer.BillingAddress
                     {
-                        City = x.Addresses.Where(a => a.Type == "Billing").FirstOrDefault()?.City,
-                        Country = x.Addresses.Where(a => a.Type == "Billing").FirstOrDefault()?.Country,
-                        Postcode = x.Addresses.Where(a => a.Type == "Billing").FirstOrDefault()?.PostalCode
+                        City = x.Addresses.Where(a => a.Type == "billing").FirstOrDefault()?.City,
+                        Country = x.Addresses.Where(a => a.Type == "billing").FirstOrDefault()?.Country,
+                        Postcode = x.Addresses.Where(a => a.Type == "billing").FirstOrDefault()?.PostalCode
                     }
 
                 },
@@ -60,7 +67,7 @@ namespace Electrolux.Api.ODataApi.Services
             });
             
 
-            return Task.FromResult(transformedResponse);
+            return transformedResponse;
         }
 
         private FilterType? GetFilterType(string filter)
