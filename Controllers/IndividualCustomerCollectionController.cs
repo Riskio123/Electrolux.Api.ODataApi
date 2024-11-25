@@ -15,9 +15,11 @@ namespace Electrolux.Api.ODataApi.Controllers
     public class IndividualCustomerCollectionController : ControllerBase
     {
         private readonly IIndividualCustomerService _individualCustomerService;
-        public IndividualCustomerCollectionController(IIndividualCustomerService individualCustomerService)
+        private readonly ILogger _logger;
+        public IndividualCustomerCollectionController(IIndividualCustomerService individualCustomerService, ILogger<IndividualCustomerCollectionController> logger)
         {
             _individualCustomerService = individualCustomerService;
+            _logger = logger;
         }
 
 
@@ -43,6 +45,7 @@ namespace Electrolux.Api.ODataApi.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError($"An error occurred while processing request. See details in Dump: {ex}");
                 return StatusCode(500, "An error occurred while processing your request.");
             }
         }
