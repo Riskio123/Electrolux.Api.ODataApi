@@ -24,7 +24,7 @@ namespace Electrolux.Api.ODataApi.Controllers
 
 
         [HttpGet]
-        [EnableQuery]
+        [EnableQuery(AllowedOrderByProperties ="Id,FirstName", MaxNodeCount = 5)]
         public async Task<ActionResult<IEnumerable<IndividualCustomer>>> GetIndividualCustomerCollection(ODataQueryOptions<IndividualCustomer> queryOptions)
         {
             var filter = queryOptions.Filter?.RawValue;

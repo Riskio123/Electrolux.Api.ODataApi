@@ -22,7 +22,7 @@ namespace Electrolux.Api.ODataApi.Services
         {
             var filter = queryOptions.Filter?.RawValue;
             var filterType = GetFilterType(filter);
-
+            
             if (filterType == null)
             {
                 throw new ArgumentException("Invalid or missing filter");
@@ -30,6 +30,13 @@ namespace Electrolux.Api.ODataApi.Services
 
             var oDataHelper = new ODataHelper();
             var oDataFilter = oDataHelper.ConvertODataToBackendQueryFilter(queryOptions.Filter.FilterClause);
+
+            bool isValid = ODataFilterValidator.ValidateFilter(filterType, oDataFilter.Value);
+
+            if (!isValid)
+            {
+                throw new ArgumentException("Invalid filter");
+            }
 
             var mockQuery = MockApiFactory.BuildMockQuery(filterType.ToString(), oDataFilter);
 
@@ -42,7 +49,7 @@ namespace Electrolux.Api.ODataApi.Services
 
              var transformedResponse = mockResponse.Records.Data.Select(x=> new IndividualCustomer
             {
-                Id = x.Id,
+                Id = x.ExternalSystemIds.C4C.ID,
                 FirstName = x.FirstName,
                 LastName = x.LastName,
                 ContactDetails = new Model.Customer.ContactDetails

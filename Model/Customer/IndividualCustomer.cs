@@ -2,7 +2,7 @@
 {
     public class IndividualCustomer
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
         public ContactDetails ContactDetails { get; set; }
         public SubScriptionSetting[] SubscriptionSettings { get; set; }
         public string AssociatedId { get; set; }
